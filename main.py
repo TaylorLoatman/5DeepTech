@@ -10,7 +10,8 @@ MY_PW = os.environ.get("MY_PW")
 app = Flask(__name__)
 
 # Configure DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///subscriber.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///subscriber.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
