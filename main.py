@@ -22,7 +22,7 @@ class Subscriber(db.Model):
     def __repr__(self):
         return f'<User {self.title}>'
 
-# db.create_all()
+db.create_all()
 
 
 
