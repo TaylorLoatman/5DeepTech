@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 import smtplib
 import os
@@ -28,6 +28,7 @@ class Subscriber(db.Model):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    error = None
 
     if request.method == 'POST':
         if request.form['form'] == 'contact_btn':
@@ -36,9 +37,14 @@ def home():
             subject = request.form['contactSubject']
             message = request.form['contactMessage']
 
-            new_email = Subscriber(db_email=email)
-            db.session.add(new_email)
-            db.session.commit()
+            existing_email = Subscriber.query.filter_by(email=email).first()
+
+            if existing_email:
+                pass
+            else:
+                new_email = Subscriber(db_email=email)
+                db.session.add(new_email)
+                db.session.commit()
 
             with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
                 connection.starttls()
@@ -51,14 +57,18 @@ def home():
 
         elif request.form['form'] == 'subscribe_btn':
             email = request.form['Email']
-            new_email = Subscriber(
-                db_email=email
-            )
-            db.session.add(new_email)
-            db.session.commit()
-        return redirect(url_for('home'))
+            existing_email = Subscriber.query.filter_by(email=email).first()
+            if existing_email:
+                flash('Subscriber email already exist.')
+            else:
+                new_email = Subscriber(
+                    db_email=email
+                )
+                db.session.add(new_email)
+                db.session.commit()
+                return redirect(url_for('home'))
 
-    return render_template('index.html')
+    return render_template('index.html', error=error)
 
 
 if __name__ == '__main__':
