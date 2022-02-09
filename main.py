@@ -3,18 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 import smtplib
 import os
 
-MY_EMAIL = 'tloatmancodes@gmail.com'
-MY_PW = 'Peyton030%'
 
-# MY_EMAIL = os.environ.get("MY_EMAIL")
-# MY_PW = os.environ.get("MY_PW")
+MY_EMAIL = os.environ.get("MY_EMAIL")
+MY_PW = os.environ.get("MY_PW")
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'THISMAYWORK2022'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 # Configure DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///subscriber.db'
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL1', 'sqlite:///subscriber.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL1', 'sqlite:///subscriber.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
