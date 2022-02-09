@@ -1,16 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import smtplib
 import os
 
+MY_EMAIL = 'tloatmancodes@gmail.com'
+MY_PW = 'Peyton030%'
 
-MY_EMAIL = os.environ.get("MY_EMAIL")
-MY_PW = os.environ.get("MY_PW")
+# MY_EMAIL = os.environ.get("MY_EMAIL")
+# MY_PW = os.environ.get("MY_PW")
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'THISMAYWORK2022'
 
 # Configure DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL1', 'sqlite:///subscriber.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///subscriber.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL1', 'sqlite:///subscriber.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -22,7 +26,7 @@ class Subscriber(db.Model):
     def __repr__(self):
         return f'<User {self.title}>'
 
-# db.create_all()
+db.create_all()
 
 
 
@@ -37,7 +41,7 @@ def home():
             subject = request.form['contactSubject']
             message = request.form['contactMessage']
 
-            existing_email = Subscriber.query.filter_by(email=email).first()
+            existing_email = Subscriber.query.filter_by(db_email=email).first()
 
             if existing_email:
                 pass
@@ -52,14 +56,14 @@ def home():
                 connection.sendmail(
                     from_addr=MY_EMAIL,
                     to_addrs="hello@5deeptech.com",
-                    msg=f"SENT FROM 5DEEPTECH.COM\n\nSubject:{subject}\nName: {name}\nEmail: {email}\nMessage: {message}"
+                    msg=f"SENT FROM 5DEEPTECH.COM\n\n{subject}\nName: {name}\nEmail: {email}\nMessage: {message}"
                 )
 
         elif request.form['form'] == 'subscribe_btn':
             email = request.form['Email']
-            existing_email = Subscriber.query.filter_by(email=email).first()
+            existing_email = Subscriber.query.filter_by(db_email=email).first()
             if existing_email:
-                flash('Subscriber email already exist.')
+                pass
             else:
                 new_email = Subscriber(
                     db_email=email
