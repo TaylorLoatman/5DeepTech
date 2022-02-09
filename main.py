@@ -4,8 +4,8 @@ import smtplib
 import os
 
 
-MY_EMAIL = os.environ.get("MY_EMAIL")
-MY_PW = os.environ.get("MY_PW")
+MY_EMAIL = 'tloatmancodes@gmail.com'
+MY_PW = 'Peyton030%'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
