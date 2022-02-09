@@ -5,7 +5,7 @@ import os
 
 
 MY_EMAIL = 'tloatmancodes@gmail.com'
-MY_PW = 'Peyton030%'
+MY_PW = os.environ.get('MY_PW')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
