@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import smtplib
+from email.message import EmailMessage
 import os
 
 
-MY_EMAIL = 'tloatmancodes@gmail.com'
 MY_PW = os.environ.get('MY_PW')
 
 app = Flask(__name__)
@@ -47,14 +47,17 @@ def home():
                 db.session.add(new_email)
                 db.session.commit()
 
-            with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
-                connection.starttls()
-                connection.login(user=MY_EMAIL, password=MY_PW)
-                connection.sendmail(
-                    from_addr=MY_EMAIL,
-                    to_addrs="hello@5deeptech.com",
-                    msg=f"SENT FROM 5DEEPTECH.COM\n\n{subject}\nName: {name}\nEmail: {email}\nMessage: {message}"
-                )
+            msg = EmailMessage()
+            msg['Subject'] = subject
+            msg['From'] = 'Web Service Inquiry'
+            msg['To'] = 'hello@5deeptech.com'
+            msg.set_content(f'{name}: {email}\n\n{message}')
+
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            server.login('tloatman3@gmail.com', MY_PW)
+            server.send_message(msg)
+            server.quit()
+
 
         elif request.form['form'] == 'subscribe_btn':
             email = request.form['Email']
