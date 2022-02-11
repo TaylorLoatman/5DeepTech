@@ -1,14 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-import smtplib
-from email.message import EmailMessage
+from flask_mail import Mail, Message
 import os
-
-
-MY_PW = os.environ.get('MY_PW')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+
+
+# Configure Mail
+app.config['MAIL_SERVER'] = 'smtp.mail.yahoo.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_DEBUG'] = True
+app.config['MAIL_USERNAME'] = 'tloatman77@yahoo.com'
+app.config['MAIL_PASSWORD'] = os.environ.get('MY_PW')
+mail = Mail(app)
+
 
 # Configure DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL1', 'sqlite:///subscriber.db')
@@ -26,7 +34,7 @@ class Subscriber(db.Model):
 # db.create_all()
 
 
-
+# Routes
 @app.route('/', methods=['GET', 'POST'])
 def home():
     error = None
@@ -47,17 +55,10 @@ def home():
                 db.session.add(new_email)
                 db.session.commit()
 
-            msg = EmailMessage()
-            msg['Subject'] = subject
-            msg['From'] = 'Web Service Inquiry'
-            msg['To'] = 'hello@5deeptech.com'
-            msg.set_content(f'{name}: {email}\n\n{message}')
-
-            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            server.login('tloatman3@gmail.com', MY_PW)
-            server.send_message(msg)
-            server.quit()
-
+            msg = Message(subject=subject, sender='tloatman77@yahoo.com', recipients=['hello@5deeptech.com'])
+            msg.body = f'From: {name}, {email}\n\n{message}'
+            mail.send(msg)
+            return redirect(url_for('home'))
 
         elif request.form['form'] == 'subscribe_btn':
             email = request.form['Email']
